@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anes — Web Developer</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #080809; --surface: #111113; --border: #1e1e22;
+    --red: #e8162a; --red-dim: rgba(232,22,42,0.12);
+    --white: #f0f0f0; --muted: #666; --card-bg: #0e0e10;
+  }
+  html { scroll-behavior: smooth; }
+  body { background:var(--bg); color:var(--white); font-family:'DM Sans',sans-serif; font-weight:300; overflow-x:hidden; }
+  body::before { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events:none; z-index:999; opacity:0.4; }
+
+  /* NAV */
+  nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; justify-content:space-between; align-items:center; padding:1.5rem 4rem; background:rgba(8,8,9,0.88); backdrop-filter:blur(12px); border-bottom:1px solid var(--border); }
+  .nav-logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.1rem; letter-spacing:0.05em; color:var(--white); text-decoration:none; }
+  .nav-logo span { color:var(--red); }
+  .nav-links { display:flex; gap:2.5rem; list-style:none; }
+  .nav-links a { color:var(--muted); text-decoration:none; font-size:0.85rem; letter-spacing:0.08em; text-transform:uppercase; transition:color 0.2s; cursor:pointer; }
+  .nav-links a:hover { color:var(--white); }
+
+  /* HERO */
+  .hero { min-height:100vh; display:flex; align-items:center; padding:0 4rem; position:relative; overflow:hidden; }
+  .hero-bg-line { position:absolute; right:0; top:0; bottom:0; width:45%; border-left:1px solid var(--border); background:linear-gradient(135deg,transparent 60%,rgba(232,22,42,0.04)); }
+  .hero-dot { position:absolute; right:22.5%; top:50%; transform:translate(50%,-50%); width:6px; height:6px; border-radius:50%; background:var(--red); box-shadow:0 0 30px 8px rgba(232,22,42,0.4); animation:pulse 2.5s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{box-shadow:0 0 30px 8px rgba(232,22,42,0.4)}50%{box-shadow:0 0 50px 16px rgba(232,22,42,0.2)} }
+  .hero-content { max-width:680px; animation:fadeUp 0.9s ease both; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+  .hero-tag { display:inline-flex; align-items:center; gap:0.5rem; background:var(--red-dim); border:1px solid rgba(232,22,42,0.25); color:var(--red); font-size:0.78rem; letter-spacing:0.1em; text-transform:uppercase; padding:0.4rem 0.9rem; border-radius:2px; margin-bottom:2rem; }
+  .hero-tag::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--red); animation:blink 1.5s ease infinite; }
+  @keyframes blink { 0%,100%{opacity:1}50%{opacity:0.3} }
+  h1 { font-family:'Syne',sans-serif; font-weight:800; font-size:clamp(3rem,7vw,5.5rem); line-height:1.0; letter-spacing:-0.02em; margin-bottom:1.5rem; }
+  h1 em { font-style:normal; color:var(--red); }
+  .hero-sub { font-size:1.05rem; color:var(--muted); line-height:1.7; max-width:480px; margin-bottom:2.5rem; }
+  .hero-cta { display:flex; gap:1rem; flex-wrap:wrap; }
+
+  /* BUTTONS */
+  .btn-primary { display:inline-flex; align-items:center; gap:0.5rem; background:var(--red); color:#fff; text-decoration:none; font-family:'Syne',sans-serif; font-weight:700; font-size:0.85rem; letter-spacing:0.06em; text-transform:uppercase; padding:0.9rem 1.8rem; border-radius:2px; transition:background 0.2s,transform 0.2s; cursor:pointer; border:none; }
+  .btn-primary:hover { background:#c4101f; transform:translateY(-2px); }
+  .btn-secondary { display:inline-flex; align-items:center; gap:0.5rem; border:1px solid var(--border); color:var(--white); text-decoration:none; font-family:'Syne',sans-serif; font-weight:700; font-size:0.85rem; letter-spacing:0.06em; text-transform:uppercase; padding:0.9rem 1.8rem; border-radius:2px; transition:border-color 0.2s,transform 0.2s; cursor:pointer; background:transparent; }
+  .btn-secondary:hover { border-color:var(--muted); transform:translateY(-2px); }
+
+  /* STATS */
+  .stats { border-top:1px solid var(--border); border-bottom:1px solid var(--border); display:flex; overflow:hidden; }
+  .stat { flex:1; padding:2rem 4rem; border-right:1px solid var(--border); }
+  .stat:last-child { border-right:none; }
+  .stat-num { font-family:'Syne',sans-serif; font-weight:800; font-size:2.2rem; color:var(--white); margin-bottom:0.3rem; }
+  .stat-num span { color:var(--red); }
+  .stat-label { font-size:0.8rem; color:var(--muted); letter-spacing:0.06em; text-transform:uppercase; }
+
+  /* SECTIONS */
+  section { padding:6rem 4rem; }
+  .section-tag { font-size:0.75rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--red); margin-bottom:0.8rem; }
+  .section-title { font-family:'Syne',sans-serif; font-weight:800; font-size:clamp(2rem,4vw,3rem); letter-spacing:-0.02em; margin-bottom:3.5rem; }
+
+  /* PROJECTS */
+  .projects-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(380px,1fr)); gap:1.5px; background:var(--border); border:1.5px solid var(--border); }
+  .project-card { background:var(--card-bg); padding:2.5rem; position:relative; overflow:hidden; transition:background 0.3s; color:inherit; display:block; cursor:pointer; }
+  .project-card::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,var(--red-dim),transparent); opacity:0; transition:opacity 0.3s; }
+  .project-card:hover { background:#131315; }
+  .project-card:hover::before { opacity:1; }
+  .project-num { font-family:'Syne',sans-serif; font-weight:800; font-size:0.75rem; letter-spacing:0.15em; color:var(--red); margin-bottom:1.5rem; }
+  .project-title { font-family:'Syne',sans-serif; font-weight:800; font-size:1.6rem; letter-spacing:-0.01em; margin-bottom:0.8rem; transition:color 0.2s; }
+  .project-card:hover .project-title { color:var(--red); }
+  .project-desc { font-size:0.9rem; color:var(--muted); line-height:1.7; margin-bottom:2rem; }
+  .project-tags { display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:2rem; }
+  .tag { font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase; background:var(--surface); border:1px solid var(--border); color:var(--muted); padding:0.3rem 0.7rem; border-radius:2px; }
+  .project-link { display:inline-flex; align-items:center; gap:0.4rem; font-family:'Syne',sans-serif; font-weight:700; font-size:0.8rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--white); transition:color 0.2s,gap 0.2s; }
+  .project-card:hover .project-link { color:var(--red); gap:0.7rem; }
+
+  /* SERVICES */
+  .services-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:1px; background:var(--border); border:1px solid var(--border); }
+  .service-item { background:var(--card-bg); padding:2rem; transition:background 0.2s,transform 0.15s; cursor:pointer; }
+  .service-item:hover { background:#131315; transform:translateY(-3px); }
+  .service-icon { font-size:1.5rem; margin-bottom:1rem; }
+  .service-name { font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; margin-bottom:0.5rem; }
+  .service-desc { font-size:0.85rem; color:var(--muted); line-height:1.6; margin-bottom:1.2rem; }
+  .service-cta { font-family:'Syne',sans-serif; font-weight:700; font-size:0.78rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--red); }
+
+  /* CONTACT SECTION */
+  .contact-wrapper { display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:center; }
+  .contact-big { font-family:'Syne',sans-serif; font-weight:800; font-size:clamp(2.5rem,5vw,4rem); line-height:1.05; letter-spacing:-0.02em; }
+  .contact-big em { font-style:normal; color:var(--red); }
+  .contact-links { display:flex; flex-direction:column; gap:1rem; }
+  .contact-link { display:flex; align-items:center; justify-content:space-between; padding:1.2rem 1.5rem; border:1px solid var(--border); color:var(--white); text-decoration:none; font-family:'Syne',sans-serif; font-weight:700; font-size:0.9rem; letter-spacing:0.05em; transition:border-color 0.2s,background 0.2s,color 0.2s; border-radius:2px; cursor:pointer; background:transparent; }
+  .contact-link:hover { background:var(--red); border-color:var(--red); }
+
+  /* FOOTER */
+  footer { border-top:1px solid var(--border); padding:2rem 4rem; display:flex; justify-content:space-between; align-items:center; }
+  .footer-logo { font-family:'Syne',sans-serif; font-weight:800; font-size:0.95rem; letter-spacing:0.05em; }
+  .footer-logo span { color:var(--red); }
+  .footer-copy { font-size:0.78rem; color:var(--muted); }
+
+  /* MODAL */
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:500; display:flex; align-items:center; justify-content:center; padding:1.5rem; opacity:0; pointer-events:none; transition:opacity 0.25s; backdrop-filter:blur(6px); }
+  .modal-overlay.active { opacity:1; pointer-events:all; }
+  .modal { background:var(--surface); border:1px solid var(--border); border-radius:4px; padding:2.5rem; max-width:480px; width:100%; position:relative; transform:translateY(20px); transition:transform 0.25s; }
+  .modal-overlay.active .modal { transform:translateY(0); }
+  .modal-close { position:absolute; top:1rem; right:1rem; background:none; border:none; color:var(--muted); font-size:1.3rem; cursor:pointer; transition:color 0.2s; line-height:1; }
+  .modal-close:hover { color:var(--white); }
+  .modal-tag { font-size:0.72rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--red); margin-bottom:0.6rem; }
+  .modal-title { font-family:'Syne',sans-serif; font-weight:800; font-size:1.6rem; margin-bottom:0.8rem; }
+  .modal-desc { font-size:0.9rem; color:var(--muted); line-height:1.7; margin-bottom:1.8rem; white-space:pre-line; }
+  .modal-actions { display:flex; flex-direction:column; gap:0.8rem; }
+  .modal-btn { display:flex; align-items:center; justify-content:space-between; padding:1rem 1.2rem; border:1px solid var(--border); color:var(--white); text-decoration:none; font-family:'Syne',sans-serif; font-weight:700; font-size:0.85rem; letter-spacing:0.05em; border-radius:2px; transition:background 0.2s,border-color 0.2s; }
+  .modal-btn:hover { background:var(--red); border-color:var(--red); }
+  .modal-btn.primary { background:var(--red); border-color:var(--red); }
+  .modal-btn.primary:hover { background:#c4101f; }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding:1.2rem 1.5rem; }
+    .nav-links { display:none; }
+    .hero, section { padding-left:1.5rem; padding-right:1.5rem; }
+    .stats { flex-direction:column; }
+    .stat { border-right:none; border-bottom:1px solid var(--border); padding:1.5rem; }
+    .contact-wrapper { grid-template-columns:1fr; }
+    footer { flex-direction:column; gap:0.5rem; text-align:center; }
+    .projects-grid { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<script>
+/* ============================================================
+   ✏️  CONFIG — TOUT CHANGER ICI FACILEMENT
+   Pour modifier le site : change juste les valeurs dans ce bloc
+   ============================================================ */
+const CONFIG = {
+  name: "Anes",
+  tagline: "Available for freelance",
+  heroSub: "I build fast, modern websites for businesses — from clean landing pages to full web applications. Based in Oran, Algeria. Working worldwide.",
+
+  /* --- CONTACT --- */
+  whatsapp: "213551712796",          // ton numéro avec indicatif (213 = Algérie)
+  email: "anesdzbk@gmail.com",       // ← change si différent
+  github: "https://github.com/anesdzbk",
+
+  /* --- STATS --- */
+  stats: [
+    { num: "2+",   label: "Projects Delivered" },
+    { num: "100%", label: "Client Satisfaction" },
+    { num: "3–5",  label: "Days Delivery" },
+    { num: "DZ",   label: "Based in Algeria" },
+  ],
+
+  /* --- PROJETS — ajoute/modifie ici --- */
+  projects: [
+    {
+      num: "01 — Marketplace",
+      title: "AutoPrix DZ",
+      desc: "A car marketplace platform built for the Algerian market. Users can browse, list, and search vehicles across all wilayas — fast, clean, and mobile-friendly.",
+      tags: ["HTML", "CSS", "JavaScript", "Algeria"],
+      url: "https://anesdzbk.github.io/autoprix-dz/",
+    },
+    {
+      num: "02 — E-Commerce",
+      title: "Clothing Store",
+      desc: "A modern online clothing store with product listings, clean UI, and smooth browsing experience. Built to convert visitors into customers.",
+      tags: ["HTML", "CSS", "JavaScript", "E-Commerce"],
+      url: "https://anesdzbk.github.io/web-dvlop-dz/CLOTHING%20WEB.html",
+    },
+    /* Pour ajouter un projet, copie le bloc ci-dessus et colle-le ici */
+  ],
+
+  /* --- SERVICES — ajoute/modifie ici --- */
+  services: [
+    {
+      icon: "🖥️",
+      name: "Landing Page",
+      desc: "One-page site to present your business, attract clients, and look professional online.",
+    },
+    {
+      icon: "🏪",
+      name: "Business Website",
+      desc: "5-page site with Home, About, Services, Gallery, and Contact. Perfect for shops and professionals.",
+    },
+    {
+      icon: "🛒",
+      name: "E-Commerce Store",
+      desc: "Online store with product listings, categories, and contact/order functionality.",
+    },
+    {
+      icon: "⚡",
+      name: "Website Fixes",
+      desc: "Got an old or broken site? I fix bugs, improve speed, and make it mobile-friendly.",
+    },
+  ],
+};
+/* ============================================================ */
+</script>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo" id="nav-logo"></a>
+  <ul class="nav-links">
+    <li><a onclick="goTo('projects')">Projects</a></li>
+    <li><a onclick="goTo('services')">Services</a></li>
+    <li><a onclick="openContact()">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-line"></div>
+  <div class="hero-dot"></div>
+  <div class="hero-content">
+    <div class="hero-tag" id="hero-tag"></div>
+    <h1>Web<br>Developer<br><em>&amp; Builder.</em></h1>
+    <p class="hero-sub" id="hero-sub"></p>
+    <div class="hero-cta">
+      <button class="btn-primary" onclick="goTo('projects')">View My Work →</button>
+      <button class="btn-secondary" onclick="openContact()">Let's Work Together</button>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats" id="stats-bar"></div>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <p class="section-tag">// Selected Work</p>
+  <h2 class="section-title">Projects.</h2>
+  <div class="projects-grid" id="projects-grid"></div>
+</section>
+
+<!-- SERVICES -->
+<section id="services" style="padding-top:0;">
+  <p class="section-tag">// What I Offer</p>
+  <h2 class="section-title">Services.</h2>
+  <div class="services-grid" id="services-grid"></div>
+</section>
+
+<!-- CONTACT SECTION -->
+<section id="contact">
+  <div class="contact-wrapper">
+    <div>
+      <p class="section-tag">// Get In Touch</p>
+      <h2 class="contact-big">Let's build<br>something<br><em>together.</em></h2>
+    </div>
+    <div class="contact-links" id="contact-links"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo" id="footer-logo"></div>
+  <div class="footer-copy">© 2026 — Built with HTML &amp; CSS · Oran, Algeria</div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal" id="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-tag" id="modal-tag"></div>
+    <h3 class="modal-title" id="modal-title"></h3>
+    <p class="modal-desc" id="modal-desc"></p>
+    <div class="modal-actions" id="modal-actions"></div>
+  </div>
+</div>
+
+<script>
+/* ---- BUILD PAGE FROM CONFIG ---- */
+document.getElementById('nav-logo').innerHTML = `${CONFIG.name}<span>.</span>dev`;
+document.getElementById('footer-logo').innerHTML = `${CONFIG.name}<span>.</span>dev`;
+document.getElementById('hero-tag').textContent = CONFIG.tagline;
+document.getElementById('hero-sub').textContent = CONFIG.heroSub;
+
+// Stats
+document.getElementById('stats-bar').innerHTML = CONFIG.stats
+  .map(s => `<div class="stat"><div class="stat-num">${s.num}</div><div class="stat-label">${s.label}</div></div>`)
+  .join('');
+
+// Projects
+document.getElementById('projects-grid').innerHTML = CONFIG.projects.map((p, i) => `
+  <div class="project-card" onclick="openProject(${i})">
+    <div class="project-num">${p.num}</div>
+    <h3 class="project-title">${p.title}</h3>
+    <p class="project-desc">${p.desc}</p>
+    <div class="project-tags">${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+    <span class="project-link">View Live Project →</span>
+  </div>`).join('');
+
+// Services
+document.getElementById('services-grid').innerHTML = CONFIG.services.map((s, i) => `
+  <div class="service-item" onclick="openService(${i})">
+    <div class="service-icon">${s.icon}</div>
+    <div class="service-name">${s.name}</div>
+    <p class="service-desc">${s.desc}</p>
+    <div class="service-cta">Get a quote →</div>
+  </div>`).join('');
+
+// Contact section buttons
+document.getElementById('contact-links').innerHTML = `
+  <a class="contact-link" href="https://wa.me/${CONFIG.whatsapp}" target="_blank">
+    <span>💬 WhatsApp — +${CONFIG.whatsapp}</span><span>→</span>
+  </a>
+  <a class="contact-link" href="mailto:${CONFIG.email}">
+    <span>📧 ${CONFIG.email}</span><span>→</span>
+  </a>
+  <a class="contact-link" href="${CONFIG.github}" target="_blank">
+    <span>🐙 GitHub</span><span>→</span>
+  </a>`;
+
+/* ---- MODAL ---- */
+function openModal({ tag, title, desc, actions }) {
+  document.getElementById('modal-tag').textContent = tag;
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-desc').textContent = desc;
+  document.getElementById('modal-actions').innerHTML = actions;
+  document.getElementById('modal-overlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+// Close when clicking outside modal box
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+function openProject(i) {
+  const p = CONFIG.projects[i];
+  openModal({
+    tag: p.num,
+    title: p.title,
+    desc: p.desc,
+    actions: `
+      <a href="${p.url}" target="_blank" class="modal-btn primary">
+        <span>🔗 View Live Site</span><span>→</span>
+      </a>
+      <a href="https://wa.me/${CONFIG.whatsapp}?text=Hi Anes, I'm interested in a project similar to ${encodeURIComponent(p.title)}." target="_blank" class="modal-btn">
+        <span>💬 Discuss a similar project</span><span>→</span>
+      </a>`
+  });
+}
+
+function openService(i) {
+  const s = CONFIG.services[i];
+  openModal({
+    tag: '// Service',
+    title: s.icon + ' ' + s.name,
+    desc: s.desc + '\n\nInterested? Contact me and we\'ll discuss your project and find the right price together.',
+    actions: `
+      <a href="https://wa.me/${CONFIG.whatsapp}?text=Hi Anes, I'm interested in your ${encodeURIComponent(s.name)} service." target="_blank" class="modal-btn primary">
+        <span>💬 Chat on WhatsApp</span><span>→</span>
+      </a>
+      <a href="mailto:${CONFIG.email}?subject=Interested in ${encodeURIComponent(s.name)}" class="modal-btn">
+        <span>📧 Send an Email</span><span>→</span>
+      </a>`
+  });
+}
+
+function openContact() {
+  openModal({
+    tag: '// Contact',
+    title: 'Get In Touch',
+    desc: 'Choose how you want to reach me. I usually respond within a few hours.',
+    actions: `
+      <a href="https://wa.me/${CONFIG.whatsapp}" target="_blank" class="modal-btn primary">
+        <span>💬 WhatsApp — +${CONFIG.whatsapp}</span><span>→</span>
+      </a>
+      <a href="mailto:${CONFIG.email}" class="modal-btn">
+        <span>📧 ${CONFIG.email}</span><span>→</span>
+      </a>
+      <a href="${CONFIG.github}" target="_blank" class="modal-btn">
+        <span>🐙 GitHub</span><span>→</span>
+      </a>`
+  });
+}
+
+function goTo(id) {
+  document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
